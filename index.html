@@ -32,6 +32,23 @@
             color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
+            background-image: url('bg.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 10, 15, 0.85);
+            pointer-events: none;
+            z-index: -1;
         }
 
         .container {
@@ -401,7 +418,7 @@
         }
 
         .shop-item-features li::before {
-            content: '✓';
+            content: '>';
             color: var(--accent-gold);
             font-weight: bold;
         }
@@ -676,22 +693,22 @@
             <h2 class="section-title">Что тебя ждёт</h2>
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">⚔️</div>
+                    <div class="feature-icon">⚔</div>
                     <h3>Кастомные боссы</h3>
                     <p>Уникальные рейдовые боссы с механиками из Souls-игр. Изучай паттерны атак, подбирай экипировку и побеждай в одиночку или командой.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🗺️</div>
+                    <div class="feature-icon">◈</div>
                     <h3>Уникальные локации</h3>
                     <p>Авторские карты в стиле тёмных сказок. Искажённые леса, заброшенные замки, подземелья с ловушками и секретными комнатами.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">📊</div>
+                    <div class="feature-icon">▣</div>
                     <h3>RPG-прокачка</h3>
                     <p>Система уровней, навыков и характеристик. Прокачивай силу, ловкость, интеллект — каждый билд открывает новые возможности.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🎭</div>
+                    <div class="feature-icon">◐</div>
                     <h3>Атмосферный сеттинг</h3>
                     <p>Мир в духе Black Souls II — японской RPG по мотивам Алисы в Зазеркалье, сказок Гримм и мифов Ктулху. Мрачно, но красиво.</p>
                 </div>
@@ -701,7 +718,7 @@
                     <p>Оптимизированный сервер без лагов. Регулярные бэкапы, античит, активная администрация и техническая поддержка 24/7.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🛡️</div>
+                    <div class="feature-icon">🛡</div>
                     <h3>Честная игра</h3>
                     <p>Никакого pay-to-win. Донат влияет только на косметику и удобство. Все игроки в равных условиях независимо от вложений.</p>
                 </div>
@@ -893,7 +910,7 @@
             navigator.clipboard.writeText(ip).then(() => {
                 const hint = document.getElementById('copyHint');
                 const originalText = hint.textContent;
-                hint.textContent = '✓ Скопировано!';
+                hint.textContent = 'Скопировано!';
                 hint.style.color = '#c9a961';
                 
                 setTimeout(() => {
