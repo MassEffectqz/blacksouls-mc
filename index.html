@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlackSouls II — Minecraft сервер в стиле японской RPG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-dark: #0a0a0f;
+            --secondary-dark: #12121a;
+            --accent-red: #8b0000;
+            --accent-gold: #c9a961;
+            --text-primary: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --border-color: #2a2a3a;
+            --card-bg: #16161f;
+            --hover-bg: #1e1e2a;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 15px 0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-red);
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .logo span {
+            color: var(--accent-gold);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-gold);
+        }
+
+        .btn-connect {
+            background: linear-gradient(135deg, var(--accent-red), #660000);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 1px solid var(--accent-red);
+        }
+
+        .btn-connect:hover {
+            background: transparent;
+            color: var(--accent-red);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(10, 10, 15, 0.9), rgba(18, 18, 26, 0.95)),
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%23ffffff" opacity="0.03"/><circle cx="30" cy="50" r="1" fill="%23ffffff" opacity="0.03"/><circle cx="70" cy="30" r="1" fill="%23ffffff" opacity="0.03"/><circle cx="90" cy="80" r="1" fill="%23ffffff" opacity="0.03"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            padding: 120px 20px 80px;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, transparent 0%, var(--primary-dark) 100%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+        }
+
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--accent-red), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-red), #660000);
+            color: white;
+            padding: 16px 40px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 2px solid var(--accent-red);
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: var(--accent-red);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(139, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            padding: 16px 40px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 2px solid var(--border-color);
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+            transform: translateY(-3px);
+        }
+
+        .server-ip {
+            margin-top: 40px;
+            padding: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .server-ip-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .server-ip-value {
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            color: var(--accent-gold);
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .server-ip-value:hover {
+            color: var(--accent-red);
+        }
+
+        .copy-hint {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background: var(--secondary-dark);
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 60px;
+            color: var(--accent-gold);
+            letter-spacing: 2px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent-red);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--accent-gold);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* About Section */
+        .about {
+            padding: 100px 0;
+            background: var(--primary-dark);
+        }
+
+        .about-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .about-text {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.9;
+            margin-bottom: 30px;
+        }
+
+        .about-highlight {
+            background: var(--card-bg);
+            border-left: 4px solid var(--accent-red);
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .about-highlight p {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Shop Section */
+        .shop {
+            padding: 100px 0;
+            background: var(--secondary-dark);
+        }
+
+        .shop-description {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 50px;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .shop-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .shop-item:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(201, 169, 97, 0.1);
+        }
+
+        .shop-item-header {
+            background: linear-gradient(135deg, var(--accent-red), #660000);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .shop-item-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .shop-item-price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+        }
+
+        .shop-item-body {
+            padding: 25px;
+        }
+
+        .shop-item-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .shop-item-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .shop-item-features li:last-child {
+            border-bottom: none;
+        }
+
+        .shop-item-features li::before {
+            content: '✓';
+            color: var(--accent-gold);
+            font-weight: bold;
+        }
+
+        .btn-buy {
+            width: 100%;
+            background: transparent;
+            color: var(--accent-gold);
+            padding: 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid var(--accent-gold);
+            display: block;
+        }
+
+        .btn-buy:hover {
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+        }
+
+        /* Rules Section */
+        .rules {
+            padding: 100px 0;
+            background: var(--primary-dark);
+        }
+
+        .rules-list {
+            max-width: 800px;
+            margin: 0 auto;
+            list-style: none;
+            counter-reset: rule-counter;
+        }
+
+        .rules-list li {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            transition: all 0.3s ease;
+        }
+
+        .rules-list li:hover {
+            border-color: var(--accent-red);
+        }
+
+        .rule-number {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-red);
+            min-width: 50px;
+        }
+
+        .rule-content h4 {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .rule-content p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Discord Section */
+        .discord {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #5865F2 0%, #404EED 100%);
+            text-align: center;
+        }
+
+        .discord h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .discord p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-discord {
+            background: white;
+            color: #5865F2;
+            padding: 16px 40px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-discord:hover {
+            background: var(--primary-dark);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-dark);
+            border-top: 1px solid var(--border-color);
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--accent-red);
+            letter-spacing: 2px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-gold);
+        }
+
+        .copyright {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .features-grid,
+            .shop-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rules-list li {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .rule-number {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-content {
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .feature-card,
+        .shop-item,
+        .rules-list li {
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+        .feature-card:nth-child(5) { animation-delay: 0.5s; }
+        .feature-card:nth-child(6) { animation-delay: 0.6s; }
+
+        .shop-item:nth-child(1) { animation-delay: 0.1s; }
+        .shop-item:nth-child(2) { animation-delay: 0.2s; }
+        .shop-item:nth-child(3) { animation-delay: 0.3s; }
+        .shop-item:nth-child(4) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">Black<span>Souls</span> II</a>
+                <ul class="nav-links">
+                    <li><a href="#features">О сервере</a></li>
+                    <li><a href="#about">Особенности</a></li>
+                    <li><a href="#shop">Донат-магазин</a></li>
+                    <li><a href="#rules">Правила</a></li>
+                </ul>
+                <a href="#discord" class="btn-connect">Discord</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>BlackSouls II</h1>
+            <p class="hero-subtitle">Minecraft сервер в стиле японской RPG с кастомными боссами и уникальной прокачкой</p>
+            <p class="hero-description">
+                Погрузись в мрачный мир искажённых сказок. Уникальные локации, сложные боссы, 
+                RPG-система прогрессии и атмосфера безумия в духе Льюиса Кэрролла и братьев Гримм.
+                Никакого доната к победе — только косметика и удобство.
+            </p>
+            <div class="hero-buttons">
+                <a href="#shop" class="btn-primary">Донат-магазин</a>
+                <a href="#discord" class="btn-secondary">Вступить в Discord</a>
+            </div>
+            <div class="server-ip" onclick="copyIP()">
+                <div class="server-ip-label">IP адрес сервера</div>
+                <div class="server-ip-value" id="serverIP">play.blacksouls.ru</div>
+                <div class="copy-hint" id="copyHint">Нажми чтобы скопировать</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Что тебя ждёт</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚔️</div>
+                    <h3>Кастомные боссы</h3>
+                    <p>Уникальные рейдовые боссы с механиками из Souls-игр. Изучай паттерны атак, подбирай экипировку и побеждай в одиночку или командой.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🗺️</div>
+                    <h3>Уникальные локации</h3>
+                    <p>Авторские карты в стиле тёмных сказок. Искажённые леса, заброшенные замки, подземелья с ловушками и секретными комнатами.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>RPG-прокачка</h3>
+                    <p>Система уровней, навыков и характеристик. Прокачивай силу, ловкость, интеллект — каждый билд открывает новые возможности.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎭</div>
+                    <h3>Атмосферный сеттинг</h3>
+                    <p>Мир в духе Black Souls II — японской RPG по мотивам Алисы в Зазеркалье, сказок Гримм и мифов Ктулху. Мрачно, но красиво.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Стабильная работа</h3>
+                    <p>Оптимизированный сервер без лагов. Регулярные бэкапы, античит, активная администрация и техническая поддержка 24/7.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Честная игра</h3>
+                    <p>Никакого pay-to-win. Донат влияет только на косметику и удобство. Все игроки в равных условиях независимо от вложений.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <h2 class="section-title">О проекте</h2>
+            <div class="about-content">
+                <p class="about-text">
+                    BlackSouls II — это Minecraft сервер, вдохновлённый культовой японской RPG Black Souls II. 
+                    Мы воссоздали атмосферу оригинальной игры: мрачные локации, сложных боссов, систему прогрессии 
+                    и нарратив в стиле тёмных сказок.
+                </p>
+                <div class="about-highlight">
+                    <p>🎯 Наша цель — предоставить игрокам уникальный опыт, сочетающий классический Minecraft с элементами хардкорных RPG. Здесь ты найдёшь вызов, исследование и чувство достижения.</p>
+                </div>
+                <p class="about-text">
+                    Сервер подходит как для соло-игроков, так и для команд. Кооперативные рейды на боссов, 
+                    совместное исследование подземелий, торговля и PvP-арена — выбирай свой путь.
+                </p>
+                <p class="about-text">
+                    Проект развивается сообществом. Мы слушаем игроков, регулярно добавляем новый контент 
+                    и улучшаем существующие механики. Присоединяйся к Discord и участвуй в развитии сервера.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shop Section -->
+    <section class="shop" id="shop">
+        <div class="container">
+            <h2 class="section-title">Донат-магазин</h2>
+            <p class="shop-description">
+                Поддержи сервер и получи эксклюзивные возможности. Все привилегии дают косметические преимущества 
+                и удобство — никакого влияния на баланс игры.
+            </p>
+            <div class="shop-grid">
+                <div class="shop-item">
+                    <div class="shop-item-header">
+                        <h3 class="shop-item-title">Traveler</h3>
+                        <div class="shop-item-price">199 ₽</div>
+                    </div>
+                    <div class="shop-item-body">
+                        <ul class="shop-item-features">
+                            <li>Префикс в чате [Traveler]</li>
+                            <li>Доступ к команде /hat</li>
+                            <li>Цветной ник в чате</li>
+                            <li>5 наборов приватной территории</li>
+                            <li>Приоритет при входе на сервер</li>
+                        </ul>
+                        <a href="#" class="btn-buy">Купить</a>
+                    </div>
+                </div>
+                <div class="shop-item">
+                    <div class="shop-item-header">
+                        <h3 class="shop-item-title">Hunter</h3>
+                        <div class="shop-item-price">499 ₽</div>
+                    </div>
+                    <div class="shop-item-body">
+                        <ul class="shop-item-features">
+                            <li>Все привилегии Traveler</li>
+                            <li>Префикс в чате [Hunter]</li>
+                            <li>Доступ к команде /fly (в лобби)</li>
+                            <li>10 наборов приватной территории</li>
+                            <li>Доступ к косметическим эффектам</li>
+                            <li>Возможность создавать кланы</li>
+                        </ul>
+                        <a href="#" class="btn-buy">Купить</a>
+                    </div>
+                </div>
+                <div class="shop-item">
+                    <div class="shop-item-header">
+                        <h3 class="shop-item-title">Knight</h3>
+                        <div class="shop-item-price">999 ₽</div>
+                    </div>
+                    <div class="shop-item-body">
+                        <ul class="shop-item-features">
+                            <li>Все привилегии Hunter</li>
+                            <li>Префикс в чате [Knight]</li>
+                            <li>Доступ к команде /workbench</li>
+                            <li>20 наборов приватной территории</li>
+                            <li>Уникальный косметический плащ</li>
+                            <li>Доступ к VIP-каналам Discord</li>
+                            <li>Возможность участвовать в тестировании</li>
+                        </ul>
+                        <a href="#" class="btn-buy">Купить</a>
+                    </div>
+                </div>
+                <div class="shop-item">
+                    <div class="shop-item-header">
+                        <h3 class="shop-item-title">Lord</h3>
+                        <div class="shop-item-price">1999 ₽</div>
+                    </div>
+                    <div class="shop-item-body">
+                        <ul class="shop-item-features">
+                            <li>Все привилегии Knight</li>
+                            <li>Префикс в чате [Lord]</li>
+                            <li>Доступ к команде /enderchest</li>
+                            <li>Безлимитные приваты</li>
+                            <li>Уникальный титул и эффекты</li>
+                            <li>Личный канал в Discord</li>
+                            <li>Голос при выборе нового контента</li>
+                            <li>Персональная благодарность на сайте</li>
+                        </ul>
+                        <a href="#" class="btn-buy">Купить</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rules Section -->
+    <section class="rules" id="rules">
+        <div class="container">
+            <h2 class="section-title">Правила сервера</h2>
+            <ul class="rules-list">
+                <li>
+                    <div class="rule-number">01</div>
+                    <div class="rule-content">
+                        <h4>Запрещены читы и модификации</h4>
+                        <p>X-Ray, aimbot, killaura и любые другие читы запрещены. Разрешены только оптимизационные моды (Sodium, Optifine) и мини-карты без отображения игроков.</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="rule-number">02</div>
+                    <div class="rule-content">
+                        <h4>Уважай других игроков</h4>
+                        <p>Оскорбления, дискриминация, токсичное поведение и спам в чате запрещены. Гриферство чужих построек карается баном.</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="rule-number">03</div>
+                    <div class="rule-content">
+                        <h4>Запрещена реклама</h4>
+                        <p>Реклама других серверов, ресурсов, Discord-каналов и любых сторонних проектов запрещена в любом виде.</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="rule-number">04</div>
+                    <div class="rule-content">
+                        <h4>Баги и эксплойты</h4>
+                        <p>Использование багов игры или сервера запрещено. При обнаружении сообщите администрации в Discord.</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="rule-number">05</div>
+                    <div class="rule-content">
+                        <h4>Следуй указаниям администрации</h4>
+                        <p>Требования модераторов и администраторов обязательны к исполнению. Споры решаются через Discord после выполнения требований.</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Discord Section -->
+    <section class="discord" id="discord">
+        <div class="container">
+            <h2>Присоединяйся к сообществу</h2>
+            <p>Discord — центральное место общения игроков. Новости, обновления, поиск команды для рейдов, техническая поддержка и ивенты.</p>
+            <a href="https://t.me/blacksoulsmc" target="_blank" class="btn-discord">Перейти в Telegram-канал</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">BlackSouls II</div>
+                <ul class="footer-links">
+                    <li><a href="#features">О сервере</a></li>
+                    <li><a href="#shop">Магазин</a></li>
+                    <li><a href="#rules">Правила</a></li>
+                    <li><a href="https://t.me/blacksoulsmc" target="_blank">Telegram</a></li>
+                </ul>
+                <p class="copyright">© 2024 BlackSouls II. Все права защищены. Not affiliated with Mojang AB.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Copy IP functionality
+        function copyIP() {
+            const ip = document.getElementById('serverIP').textContent;
+            navigator.clipboard.writeText(ip).then(() => {
+                const hint = document.getElementById('copyHint');
+                const originalText = hint.textContent;
+                hint.textContent = '✓ Скопировано!';
+                hint.style.color = '#c9a961';
+                
+                setTimeout(() => {
+                    hint.textContent = originalText;
+                    hint.style.color = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const headerOffset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Header background on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.style.background = 'rgba(10, 10, 15, 0.98)';
+            } else {
+                header.style.background = 'rgba(10, 10, 15, 0.95)';
+            }
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .shop-item, .rules-list li').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.6s ease-out';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
